@@ -19,7 +19,7 @@ Build & Run
 bash
 
 git clone https://github.com/ZakariaNomaan11/Custode
-cd custode-inventory
+cd custode
 gcc main.c -o custode
 ./custode
 On Windows (MinGW):
