@@ -458,8 +458,8 @@ void adminMenu(const char *username) {
     /* TODO: Implement admin menu */
 }
 
-#ifndef TEST_BUILD
-int start() {
+
+int main() {
     int choice;
     while (1) {
         printf("*______________Custode_______________*\n");
@@ -488,7 +488,4 @@ int start() {
     return 0;
 }
 
-int main() {
-    return start();
-}
-#endif
+
