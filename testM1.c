@@ -1,13 +1,17 @@
 #include <stdio.h>
 #include <string.h>
 #define TEST_BUILD
-#include "custode.c"   
+#include "custode.c"
+
+int categoryCount = 0;
+int itemCount = 0;
+
 void resetData() {
     categoryCount = 0;
     itemCount = 0;
 }
 
-* Stock + Transaction logic */
+/* Stock + Transaction logic */
 
 int test7_validateStock_not_enough() {
     Item it = {1, "Keyboard", 5, 1000.0f, 0, 0}; 

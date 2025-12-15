@@ -420,7 +420,7 @@ int loginAdmin(char *adminOut) {
 
 /* ================== Main / Custode UI ================== */
 
-int main() {
+int start() {
     while (1) {
         printf("_________________________________\n");
         printf("             Custode             \n");
