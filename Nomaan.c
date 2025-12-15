@@ -1,85 +1,81 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-int main(){
-    printf("_________________________________\n");
-    printf("            Bookers              \n");
-    printf("_________________________________\n");
-    
-    int choice = 0;
-    printf("Your Choice:\n");
-    printf("1. Sign Up\n");
-    printf("2. User Login\n");
-    printf("3. Admin Login\n");
-    scanf("%d", &choice);
+#define MAX_CATEGORIES 50
+#define MAX_ITEMS      200
+#define MAX_NAME       100
+#define MAX_ROLE       10
 
-    if(choice == 1){
-        printf("1. As User\n");
-        printf("2. As Admin\n");
-        int signup_choice = 0;
-        scanf("%d", &signup_choice);
-        
-        if(signup_choice == 1){
-            char username[1000];
-            char password[100];
-            printf("User Sign Up Selected\n");
-            printf("Choose Username: ");
-            scanf("%s", username);
-            printf("Choose Password: ");
-            scanf("%s", password);
-            
-            FILE *f = fopen("users.txt", "a");
-            if(f == NULL){
-                printf("Error opening file!\n");
-                return 1;
-            }
-            fprintf(f, "%s %s\n", username, password);
-            fclose(f);
-            printf("User registered successfully!\n");
-        }
-        else if(signup_choice == 2){
-            char admin[1000];
-            char password[100];
-            printf("Admin Sign Up Selected\n");
-            printf("Choose admin: ");
-            scanf("%s", admin);
-            printf("Choose Password: ");
-            scanf("%s", password);
-            
-            FILE *f = fopen("admins.txt", "a");
-            if(f == NULL){
-                printf("Error opening file!\n");
-                return 1;
-            }
-            fprintf(f, "%s %s\n", admin, password);
-            fclose(f);
-            printf("Admin registered successfully!\n");
-        }
-        else{
-            printf("Invalid Sign Up Choice\n");
-        }
+#define USER_TXT  "users.txt"
+#define ADMIN_TXT "admins.txt"
+
+typedef enum { STOCK_IN = 1, STOCK_OUT = 2 } StockType;
+
+typedef struct {
+    int  id;
+    char name[MAX_NAME];
+} Category;
+
+typedef struct {
+    int   id;
+    char  name[MAX_NAME];
+    int   category_id;
+    int   quantity;
+    int   reorder_level;
+    float price;
+} Item;
+
+typedef struct {
+    int       transactionId;
+    int       itemId;
+    StockType type;
+    int       amount;
+    char      username[MAX_NAME];
+    char      role[MAX_ROLE];
+} StockTransaction;
+
+/* global storage */
+Category categories[MAX_CATEGORIES];
+Item     items[MAX_ITEMS];
+int      categoryCount = 0;
+int      itemCount     = 0;
+
+/* files */
+const char *TRAN_FILE = "transactions.dat";
+
+/* helpers */
+void inputString(char *s, int size) {
+    int c;
+    if (fgets(s, size, stdin)) {
+        s[strcspn(s, "\n")] = 0;
+    } else {
+        s[0] = 0;
     }
-    else if(choice == 2){
-        char username[1000];
-        char password[100];
-        printf("User Login Selected\n");
-        printf("Please enter your Username: ");
-        scanf("%s", username);
-        printf("Please enter your Password: ");
-        scanf("%s", password);
-    }
-    else if(choice == 3){
-        char admin[1000];
-        char password[100];
-        printf("Admin Login Selected\n");
-        printf("Please enter your admin username: ");
-        scanf("%s", admin);
-        printf("Please enter your Password: ");
-        scanf("%s", password);
-    }
-    else{
-        printf("Invalid Choice\n");
-    }
-    
-    return 0;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+int appendRecord(const char *filename, const void *record, size_t size) {
+    FILE *fp = fopen(filename, "ab");
+    if (!fp) return 0;
+    int ok = fwrite(record, size, 1, fp) == 1;
+    fclose(fp);
+    return ok;
+}
+
+void *loadAllRecords(const char *filename, size_t size, int *countOut) {
+    *countOut = 0;
+    FILE *fp = fopen(filename, "rb");
+    if (!fp) return NULL;
+    fseek(fp, 0, SEEK_END);
+    long bytes = ftell(fp);
+    rewind(fp);
+    if (bytes <= 0 || bytes % (long)size != 0) { fclose(fp); return NULL; }
+    int count = (int)(bytes / (long)size);
+    void *buf = malloc(size * count);
+    if (!buf) { fclose(fp); return NULL; }
+    if (fread(buf, size, count, fp) != (size_t)count) { free(buf); fclose(fp); return NULL; }
+    fclose(fp);
+    *countOut = count;
+    return buf;
 }
