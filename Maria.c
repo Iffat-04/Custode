@@ -78,7 +78,7 @@ void processStockTransaction(Item *item, StockTransaction *tx) {
 /* ---------------------------------------------------------
    MAIN : Example run
    --------------------------------------------------------- */
-int main() {
+int start() {
 
     // Sample item
     Item item1;
