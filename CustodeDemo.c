@@ -459,7 +459,7 @@ void adminMenu(const char *username) {
 }
 
 
-int start() {
+int main() {
     int choice;
     while (1) {
         printf("*______________Custode_______________*\n");
